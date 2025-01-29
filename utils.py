@@ -4,7 +4,7 @@ Adapted from https://github.com/kojima-takeshi188/zero_shot_cot
 
 from statistics import mean
 from torch.utils.data import Dataset
-import openai
+# import openai
 import os
 import multiprocessing
 import json
@@ -14,6 +14,7 @@ import re
 import random
 import time
 import datetime
+from main import decoder_for_molmo
 
 def shuffleDict(d):
   keys = list(d.keys())
@@ -49,56 +50,25 @@ def print_now(return_flag=0):
         pass
 
 # Sentence Generator (Decoder) for GPT-3 ...
-def decoder_for_gpt3(args, input, max_length):
+def decoder_for_molmo(args, input, max_length):
     
-    # GPT-3 API allows each users execute the API within 60 times in a minute ...
-    # time.sleep(1)
     time.sleep(args.api_time_interval)
-    
-    # https://beta.openai.com/account/api-keys
-    # openai.api_key = "[Your OpenAI API Key]"
     
     # Specify engine ...
     # Instruct GPT3
-    if args.model == "gpt3":
-        engine = "text-ada-001"
-    elif args.model == "gpt3-medium":
-        engine = "text-babbage-001"
-    elif args.model == "gpt3-large":
-        engine = "text-curie-001"
-    elif args.model == "gpt3-xl":
-        engine = "text-davinci-002"
-    elif args.model == "text-davinci-001":
-        engine = "text-davinci-001"
-    elif args.model == "code-davinci-002":
-        engine = "code-davinci-002"
+    if args.model == "MolmoE-1B":
+        engine = "allenai/MolmoE-1B-0924"
+    elif args.model == "Molmo-7B-O":
+        engine = "allenai/Molmo-7B-O-0924"
+    elif args.model == "Molmo-7B-D":
+        engine = "allenai/Molmo-7B-D-0924"
+    elif args.model == "Molmo-72B":
+        engine = "allenai/Molmo-72B-0924"
     else:
         raise ValueError("model is not properly defined ...")
         
-    if ("few_shot" in args.method or "auto" in args.method)  and engine == "code-davinci-002":
-        response = openai.Completion.create(
-          engine=engine,
-          prompt=input,
-          max_tokens=max_length,
-          temperature=args.temperature,
-          top_p=1,
-          frequency_penalty=0,
-          presence_penalty=0,
-          stop=["\n"]
-        )
-    else:
-        response = openai.Completion.create(
-            engine=engine,
-            prompt=input,
-            max_tokens=max_length,
-            temperature=args.temperature,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-            stop=None
-        )
-
-    return response["choices"][0]["text"]
+    response = decoder_for_molmo(engine, input, max_length)
+    return response
 
 class Decoder():
     def __init__(self):
@@ -106,7 +76,7 @@ class Decoder():
         pass
  
     def decode(self, args, input, max_length):
-        response = decoder_for_gpt3(args, input, max_length)
+        response = decoder_for_molmo(args, input, max_length)
         return response
 
 def data_reader(args):
