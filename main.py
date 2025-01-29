@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoProcessor, GenerationConfig #AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoProcessor, GenerationConfig
 from PIL import Image
 import requests
 import time
@@ -45,28 +45,3 @@ print(generated_text)
 
 # >>>  This image features an adorable black Labrador puppy, captured from a top-down
 #      perspective. The puppy is sitting on a wooden deck, which is composed ...
-
-
-def decoder_for_molmo(model_name, input_text, max_length):
-    # Assuming you are using Hugging Face to load Molmo
-    # Load the model and tokenizer
-    model = AutoModelForCausalLM.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-    # Tokenize the input
-    inputs = tokenizer(input_text, return_tensors="pt", truncation=True, padding=True, max_length=512)
-
-    # Generate a response
-    outputs = model.generate(
-        **inputs,
-        max_length=max_length,
-        num_beams=5,
-        no_repeat_ngram_size=2,
-        temperature=1.0,
-        top_p=0.95,
-        top_k=60
-    )
-
-    # Decode and return the output text
-    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return output_text

@@ -14,7 +14,6 @@ import re
 import random
 import time
 import datetime
-from main import decoder_for_molmo
 
 def shuffleDict(d):
   keys = list(d.keys())
@@ -49,13 +48,13 @@ def print_now(return_flag=0):
     else:
         pass
 
-# Sentence Generator (Decoder) for GPT-3 ...
+# Sentence Generator (Decoder) for Molmo ...
 def decoder_for_molmo(args, input, max_length):
     
     time.sleep(args.api_time_interval)
     
     # Specify engine ...
-    # Instruct GPT3
+    # Instruct Molmo
     if args.model == "MolmoE-1B":
         engine = "allenai/MolmoE-1B-0924"
     elif args.model == "Molmo-7B-O":
